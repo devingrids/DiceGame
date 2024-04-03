@@ -20,6 +20,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -43,6 +44,63 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+fun DrawScope.circle(offset: () -> Offset){
+    val radius = Dp(20f).value
+    drawCircle(
+        Color.Black,
+        radius = radius,
+        center = offset()
+    )
+}
+
+fun DrawScope.center(){
+    circle(){
+        Offset(size.width / 2, size.height / 2)
+    }
+}
+
+fun DrawScope.topRight(){
+    circle(){
+        Offset(size.width -  Dp(20f).value, Dp(20f).value)
+    }
+}
+
+fun DrawScope.bottomLeft(){
+    circle(){
+        Offset(size.width -  Dp(20f).value, Dp(20f).value)
+    }
+}
+
+fun DrawScope.bullet(number: Int) {
+    when (number) {
+        1 -> {
+           center()
+        }
+
+        2 -> {
+           topRight()
+            bottomLeft()
+        }
+    }
+}
+
+@Composable
+fun Dice(number: Int, modifier: Modifier) {
+    Canvas(
+        modifier = Modifier
+            .size(96.dp, 96.dp)
+    ) {
+        drawRoundRect(
+            Color.Green,
+            cornerRadius = CornerRadius(20f, 20f),
+            topLeft = Offset(10f, 10f),
+            size = size
+        )
+
+        bullet(number = number)
+    }
+}
+
 @Composable
 fun App() {
     Box(
@@ -50,44 +108,18 @@ fun App() {
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        Canvas(
-            modifier = Modifier
-                .size(96.dp, 96.dp)
-                .align(Alignment.Center)
-        ) {
-            drawRoundRect(
-                Color.Green,
-                cornerRadius = CornerRadius(20f, 20f),
-                topLeft = Offset(10f, 10f),
-                size = size
-            )
 
-            drawCircle(
-                Color.Black,
-                radius = Dp(20f).value,
-                center = Offset(size.width / 2, size.width / 2)
-            )
+        Dice(1, Modifier.align(Alignment.Center))
+        Dice(2, Modifier.align(Alignment.TopStart))
 
-        }
         Button(
-            onClick = { },
-            modifier = Modifier
+            onClick = { }, modifier = Modifier
                 .align(Alignment.Center)
                 .offset(y = (100).dp)
         ) {
             Text(text = "Jogar")
-
-
         }
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
 }
 
 @Preview(showBackground = true)
