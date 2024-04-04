@@ -16,7 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DiceGameTheme {
+                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -66,80 +67,75 @@ fun DrawScope.center() {
 }
 
 fun DrawScope.topRight() {
-    circle() {
+    circle {
         Offset(size.width - it, it * 2f)
     }
 }
 
 fun DrawScope.topLeft() {
-    circle() {
+    circle {
         Offset(it * 2f, it * 2f)
     }
 }
 
-fun DrawScope.bottomRight() {
-    circle() {
-        Offset(size.width - it, size.height - it)
-    }
-}
-
 fun DrawScope.bottomLeft() {
-    circle() {
+    circle {
         Offset(it * 2f, size.height - it)
     }
 }
 
+fun DrawScope.bottomRight() {
+    circle {
+        Offset(size.width - it, size.height - it)
+    }
+}
+
 fun DrawScope.centerLeft() {
-    circle() {
+    circle {
         Offset(it * 2f, (size.height / 2f) + (it / 2f))
     }
 }
 
 fun DrawScope.centerRight() {
-    circle() {
+    circle {
         Offset(size.width - it, (size.height / 2f) + (it / 2f))
     }
 }
 
 fun DrawScope.bullet(number: Int) {
-    when (number) {
+    when(number) {
         1 -> {
             center()
         }
-
         2 -> {
             topRight()
             bottomLeft()
         }
-
         3 -> {
-            topRight()
             center()
+            topRight()
             bottomLeft()
         }
-
         4 -> {
             topRight()
             topLeft()
-            bottomLeft()
             bottomRight()
+            bottomLeft()
         }
-
         5 -> {
+            center()
             topRight()
             topLeft()
-            bottomLeft()
             bottomRight()
-            center()
+            bottomLeft()
         }
-
         6 -> {
             topRight()
             topLeft()
+            centerRight()
+            centerLeft()
             bottomRight()
             bottomLeft()
-            centerLeft()
-            centerRight()
         }
     }
 }
@@ -147,7 +143,7 @@ fun DrawScope.bullet(number: Int) {
 @Composable
 fun Dice(number: Int, modifier: Modifier) {
     Canvas(
-        modifier = Modifier
+        modifier = modifier
             .size(96.dp, 96.dp)
     ) {
         drawRoundRect(
@@ -156,15 +152,15 @@ fun Dice(number: Int, modifier: Modifier) {
             topLeft = Offset(10f, 10f),
             size = size
         )
+
         bullet(number = number)
     }
 }
 
 @Composable
 fun App() {
-
-    var r by remember { mutableStateOf(3) }
-    var timer by remember { mutableStateOf(0) }
+    var r by remember { mutableIntStateOf(3) }
+    var timer by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(key1 = timer) {
         if (timer > 0) {
@@ -173,7 +169,7 @@ fun App() {
             timer -= 1
         }
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -192,7 +188,7 @@ fun App() {
             if (timer > 0) {
                 Text(text = "$timer")
             } else {
-                Text(text = "Jogar")
+                Text("Jogar")
             }
         }
     }
@@ -200,10 +196,10 @@ fun App() {
 
 @Preview(showBackground = true)
 @Composable
-fun DicePreview() {
-    Surface(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        App()
+fun DiceGamePreview() {
+    DiceGameTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            App()
+        }
     }
 }
